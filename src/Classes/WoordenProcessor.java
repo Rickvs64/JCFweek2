@@ -1,5 +1,7 @@
 package Classes;
 
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+
 import java.util.*;
 
 public class WoordenProcessor implements IWoordenProcessor {
@@ -46,12 +48,22 @@ public class WoordenProcessor implements IWoordenProcessor {
 
     @Override
     public PriorityQueue<Node> sorteerRaw(String text) {
-        return null;
+        throw new NotImplementedException();
     }
 
     @Override
     public Map<Character, Integer> frequentieRaw(String text) {
-        return null;
+        Map<Character, Integer> frequency = new HashMap<>();
+        for (char w : text.toCharArray()){
+            Integer n = frequency.get(w);
+
+            if (n == null) {
+                frequency.put(w, 1);
+            } else {
+                frequency.replace(w, n+1);
+            }
+        }
+        return frequency;
     }
 
     private List<String> textToList(String text) {

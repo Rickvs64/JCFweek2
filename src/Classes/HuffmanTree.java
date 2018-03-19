@@ -1,9 +1,7 @@
 package Classes;
 
 import java.io.Serializable;
-import java.util.BitSet;
-import java.util.Iterator;
-import java.util.Spliterator;
+import java.util.*;
 import java.util.function.Consumer;
 
 public class HuffmanTree implements Iterable<Character>, Serializable {
@@ -13,12 +11,96 @@ public class HuffmanTree implements Iterable<Character>, Serializable {
     private int length; // Length of input string.
     private String input; // Input string.
 
+    private IWoordenProcessor wp = new WoordenProcessor();
+
     public HuffmanTree(String text) {
         input = text;
         length = input.length();
 
         compress(input);
     }
+
+    private void compress(String text) {
+        Map<Character, Integer> frequency = wp.frequentieRaw(text);
+
+        PriorityQueue<Node> queue = new PriorityQueue<>();
+
+        frequency.forEach((c , i) -> {
+            Node node = new Node(c, i);
+            queue.add(node);
+        });
+
+        while (!queue.isEmpty()) {
+            Node node1 = queue.poll();
+            Node node2 = queue.poll();
+
+            Node next = new Node(node1, node2);
+
+            if (queue.isEmpty())
+                startingNode = next;
+            else
+                queue.add(next);
+        }
+        bitSet = generateBitmap(text);
+    }
+
+    private BitSet generateBitmap(String text) {
+        HashMap<Character, CharacterCode> map = new HashMap<>();
+        fillBitmap(map, startingNode, new BitSet(), (byte)0); // TEMP
+
+        BitSet encodedText = new BitSet();
+
+        int i = 0;
+        for (char w : text.toCharArray()) {
+            CharacterCode code = map.get(w);
+            BitSet bits =  code.getCode();
+
+            for (int j = 0; j < code.getCodeSize(); j++) {
+                boolean b = bits.get(j);
+                encodedText.set(i, b);
+                i++;
+            }
+        }
+
+        return encodedText;
+    }
+
+    private void fillBitmap(HashMap<Character, CharacterCode> map, Node node) {
+        fillBitmap(map, node, new BitSet(), (byte)0);
+    }
+
+    private void fillBitmap(HashMap<Character, CharacterCode> map, Node node, BitSet bits, byte index) {
+        if (node.isCharacterNode()) {
+            char character = node.getCharacter();
+            map.put(character, new CharacterCode(bits, index));
+            return;
+        }
+
+        if (node.getLeftNode() != null) {
+            Node leftNode = node.getLeftNode();
+            bits.set(index, false);
+            fillBitmap(map, leftNode, bits, (byte)(index+1));
+            bits.clear(index);
+        }
+
+        if (node.getRightNode() != null) {
+            Node rightNode = node.getRightNode();
+            bits.set(index, true);
+            fillBitmap(map, rightNode, bits, (byte)(index+1));
+            bits.clear(index);
+        }
+    }
+
+    public String decode() {
+        StringBuilder sb = new StringBuilder();
+
+        for (char character: this) {
+            sb.append(character);
+        }
+
+        return sb.toString();
+    }
+
 
     /**
      * Manual iterator class to allow cycling through a loop properly.
@@ -40,4 +122,6 @@ public class HuffmanTree implements Iterable<Character>, Serializable {
             action.accept(c);
         }
     }
+
+
 }

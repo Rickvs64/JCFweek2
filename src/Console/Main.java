@@ -8,6 +8,8 @@ import java.util.Scanner;
 public class Main {
     static IWoordenProcessor wp = new WoordenProcessor();
     static String inputText = "";
+    static HuffmanTree tree;
+    static Boolean generatedTree = false; // Indicates whether the HuffmanTree object is up to date with the input string.
 
     private static void showIntro() {
         System.out.println("JCF ASSIGNMENT 2");
@@ -22,6 +24,7 @@ public class Main {
     }
 
     private static void showIntro2() {
+        generatedTree = false;
         System.out.println("Please input a string (or leave empty for a default string) and then press ENTER: ");
 
         // Read input
@@ -62,10 +65,27 @@ public class Main {
 
                 // Might as well keep track of how long it actually takes to perform this task.
                 long start = System.currentTimeMillis();
-
-                HuffmanTree tree = new HuffmanTree(inputText);
-
+                tree = new HuffmanTree(inputText); // Here's where the magic happens.
                 long end = System.currentTimeMillis();
+
+                System.out.println("Tree generated.");
+                System.out.println("Process took " + (end - start) + "ms");
+                generatedTree = true; // The Huffman tree is now up-to-date with the user's given input string. Changing said string will reset this bool back to false.
+
+                System.out.println("==============================");
+                showIntro3();
+                break;
+
+            case 3:
+                if (generatedTree) {
+                    tree.forEach(System.out::print);
+                } else {
+                    System.out.println("ERROR!");
+                    System.out.println("Cannot save any data to disk without first compressing the input string.");
+                    System.out.println("Please first select the option to compress your input string with Huffman logic.");
+                }
+                System.out.println("==============================");
+                showIntro3();
                 break;
 
             default:
