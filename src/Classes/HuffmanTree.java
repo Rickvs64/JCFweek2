@@ -91,7 +91,7 @@ public class HuffmanTree implements Iterable<Character>, Serializable {
         }
     }
 
-    public String decode() {
+    public String getDecoded() {
         StringBuilder sb = new StringBuilder();
 
         for (char character: this) {
@@ -99,6 +99,16 @@ public class HuffmanTree implements Iterable<Character>, Serializable {
         }
 
         return sb.toString();
+    }
+
+    public String getEncoded() {
+        return bitSet.toString();
+    }
+
+    public void setBitSetManually(BitSet bitset) {
+        this.bitSet = bitset;
+        input = getDecoded();
+        length = input.length();
     }
 
 

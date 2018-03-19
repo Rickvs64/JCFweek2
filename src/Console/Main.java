@@ -2,6 +2,11 @@ package Console;
 
 import Classes.*;
 
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.BitSet;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
@@ -78,11 +83,35 @@ public class Main {
 
             case 3:
                 if (generatedTree) {
-                    tree.forEach(System.out::print);
+                    if (attemptSave()) {
+                        System.out.println("Process completed!");
+                        System.out.println("File saved as output_" + inputText.substring(0, 9));
+                    } else {
+                        System.out.println("Unexpected error occured while trying to save data.");
+                    }
                 } else {
                     System.out.println("ERROR!");
                     System.out.println("Cannot save any data to disk without first compressing the input string.");
                     System.out.println("Please first select the option to compress your input string with Huffman logic.");
+                }
+                System.out.println("==============================");
+                showIntro3();
+                break;
+
+            case 4:
+                System.out.println("Loading a file requires knowing its filename.");
+                System.out.println("Please input its EXACT and COMPLETE filename below:");
+
+                String filename = readStringInputFromConsole();
+
+                if (attemptLoad(filename)) {
+                    System.out.println("Process completed!");
+                    System.out.println("Could it be that the original input string was...");
+                    System.out.println("(Drumrolls please...)");
+                    System.out.println("...");
+                    System.out.println("{" + tree.getDecoded() + "}");
+                } else {
+                    System.out.println("Error occured. Does this file exist?");
                 }
                 System.out.println("==============================");
                 showIntro3();
@@ -113,6 +142,43 @@ public class Main {
         }
         catch (InputMismatchException ex) {
             return -1;
+        }
+    }
+
+    private static Boolean attemptSave() {
+        String filename = "output_" + inputText.substring(0, 9); // Filename only shows the first ~10 chars to avoid overly long filenames.
+
+        FileOutputStream fos = null;
+        ObjectOutputStream oos = null;
+
+        try {
+            fos = new FileOutputStream(filename);
+            oos = new ObjectOutputStream(fos);
+            oos.writeObject(tree.getEncoded());
+            return true;
+        } catch (IOException e) {
+            return false;
+        }
+    }
+
+    private static Boolean attemptLoad(String filename) {
+        FileInputStream fis = null;
+        ObjectInputStream ois = null;
+
+        try {
+            fis = new FileInputStream(filename);
+            ois = new ObjectInputStream(fis);
+
+            Path path = Paths.get(filename);
+            byte[] ans = Files.readAllBytes(path);
+            BitSet bits = BitSet.valueOf(ans);
+
+            tree.setBitSetManually(bits);
+            return true;
+        } catch (FileNotFoundException e) {
+            return false;
+        } catch (IOException e) {
+            return false;
         }
     }
 }
