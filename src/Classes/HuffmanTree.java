@@ -9,15 +9,14 @@ public class HuffmanTree implements Iterable<Character>, Serializable {
     private Node startingNode; // Start/root of tree.
     private BitSet bitSet; // Collection of data.
     private int length; // Length of input string.
-    private String input; // Input string.
+    // private String input; // Input string. Don't use it to prove this class can decode back to readable string.
 
     private IWoordenProcessor wp = new WoordenProcessor();
 
     public HuffmanTree(String text) {
-        input = text;
-        length = input.length();
+        length = text.length();
 
-        compress(input);
+        compress(text);
     }
 
     private void compress(String text) {
@@ -105,10 +104,11 @@ public class HuffmanTree implements Iterable<Character>, Serializable {
         return bitSet.toString();
     }
 
-    public void setBitSetManually(BitSet bitset) {
+    public String setBitSetManually(BitSet bitset) {
         this.bitSet = bitset;
-        input = getDecoded();
-        length = input.length();
+        String original = getDecoded();
+        length = original.length();
+        return original;
     }
 
 

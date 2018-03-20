@@ -109,7 +109,7 @@ public class Main {
                     System.out.println("Could it be that the original input string was...");
                     System.out.println("(Drumrolls please...)");
                     System.out.println("...");
-                    System.out.println("{" + tree.getDecoded() + "}");
+                    System.out.println("{" + inputText + "}");
                 } else {
                     System.out.println("Error occured. Does this file exist?");
                 }
@@ -154,9 +154,10 @@ public class Main {
         try {
             fos = new FileOutputStream(filename);
             oos = new ObjectOutputStream(fos);
-            oos.writeObject(tree.getEncoded());
+            oos.writeObject(tree);
             return true;
         } catch (IOException e) {
+            e.printStackTrace();
             return false;
         }
     }
@@ -169,15 +170,16 @@ public class Main {
             fis = new FileInputStream(filename);
             ois = new ObjectInputStream(fis);
 
-            Path path = Paths.get(filename);
-            byte[] ans = Files.readAllBytes(path);
-            BitSet bits = BitSet.valueOf(ans);
+            tree = (HuffmanTree)ois.readObject();
 
-            tree.setBitSetManually(bits);
+            generatedTree = false;
+            inputText = tree.getDecoded();
             return true;
         } catch (FileNotFoundException e) {
             return false;
         } catch (IOException e) {
+            return false;
+        } catch (ClassNotFoundException e) {
             return false;
         }
     }

@@ -2,9 +2,10 @@ package Classes;
 
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
+import java.io.Serializable;
 import java.util.*;
 
-public class WoordenProcessor implements IWoordenProcessor {
+public class WoordenProcessor implements IWoordenProcessor, Serializable {
     @Override
     public String sorteer(String text) {
         // Read the input field and put every word into a list.
