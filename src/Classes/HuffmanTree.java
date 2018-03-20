@@ -4,6 +4,9 @@ import java.io.Serializable;
 import java.util.*;
 import java.util.function.Consumer;
 
+/**
+ * HuffmanTree class can compress data into a non-readable format.
+ */
 public class HuffmanTree implements Iterable<Character>, Serializable {
 
     private Node startingNode; // Start/root of tree.
@@ -11,17 +14,26 @@ public class HuffmanTree implements Iterable<Character>, Serializable {
     private int length; // Length of input string.
     // private String input; // Input string. Don't use it to prove this class can decode back to readable string.
 
-    private IWoordenProcessor wp = new WoordenProcessor();
+    private IWoordenProcessor wp = new WoordenProcessor(); // Needed in order to prove sort/frequency functionality.
 
+    /**
+     * Constructor, note how it never saves the input string anywhere.
+     * @param text The original input string.
+     */
     public HuffmanTree(String text) {
         length = text.length();
 
         compress(text);
     }
 
+    /**
+     * First sorts characters from the input string by frequency, then polls them into different nodes.
+     * @param text
+     */
     private void compress(String text) {
         Map<Character, Integer> frequency = wp.frequentieRaw(text);
 
+        // Contrary to a regular queue, a PriorityQueue does NOT follow FIFO rules.
         PriorityQueue<Node> queue = new PriorityQueue<>();
 
         frequency.forEach((c , i) -> {
@@ -43,9 +55,15 @@ public class HuffmanTree implements Iterable<Character>, Serializable {
         bitSet = generateBitmap(text);
     }
 
+    /**
+     * Stores a "dictionary" of sorts that defines which character belongs to which code.
+     * @param text
+     * @return
+     */
     private BitSet generateBitmap(String text) {
+        // Using a HashMap since order of definitions is not essential.
         HashMap<Character, CharacterCode> map = new HashMap<>();
-        fillBitmap(map, startingNode, new BitSet(), (byte)0); // TEMP
+        fillBitmap(map, startingNode, new BitSet(), (byte)0);
 
         BitSet encodedText = new BitSet();
 
@@ -54,8 +72,8 @@ public class HuffmanTree implements Iterable<Character>, Serializable {
             CharacterCode code = map.get(w);
             BitSet bits =  code.getCode();
 
-            for (int j = 0; j < code.getCodeSize(); j++) {
-                boolean b = bits.get(j);
+            for (int i2 = 0; i2 < code.getCodeSize(); i2++) {
+                boolean b = bits.get(i2);
                 encodedText.set(i, b);
                 i++;
             }
@@ -64,10 +82,13 @@ public class HuffmanTree implements Iterable<Character>, Serializable {
         return encodedText;
     }
 
-    private void fillBitmap(HashMap<Character, CharacterCode> map, Node node) {
-        fillBitmap(map, node, new BitSet(), (byte)0);
-    }
-
+    /**
+     * Specific method that binds prefix codes at the current position.
+     * @param map
+     * @param node
+     * @param bits
+     * @param index
+     */
     private void fillBitmap(HashMap<Character, CharacterCode> map, Node node, BitSet bits, byte index) {
         if (node.isCharacterNode()) {
             char character = node.getCharacter();
@@ -90,6 +111,10 @@ public class HuffmanTree implements Iterable<Character>, Serializable {
         }
     }
 
+    /**
+     * Literally returns the serialized class character by character.
+     * @return
+     */
     public String getDecoded() {
         StringBuilder sb = new StringBuilder();
 
@@ -98,17 +123,6 @@ public class HuffmanTree implements Iterable<Character>, Serializable {
         }
 
         return sb.toString();
-    }
-
-    public String getEncoded() {
-        return bitSet.toString();
-    }
-
-    public String setBitSetManually(BitSet bitset) {
-        this.bitSet = bitset;
-        String original = getDecoded();
-        length = original.length();
-        return original;
     }
 
 

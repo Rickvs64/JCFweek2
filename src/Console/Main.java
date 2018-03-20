@@ -3,10 +3,6 @@ package Console;
 import Classes.*;
 
 import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.BitSet;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
@@ -85,7 +81,7 @@ public class Main {
                 if (generatedTree) {
                     if (attemptSave()) {
                         System.out.println("Process completed!");
-                        System.out.println("File saved as output_" + inputText.substring(0, 9));
+                        System.out.println("File saved as output_" + inputText.substring(0, 2));
                     } else {
                         System.out.println("Unexpected error occured while trying to save data.");
                     }
@@ -146,7 +142,7 @@ public class Main {
     }
 
     private static Boolean attemptSave() {
-        String filename = "output_" + inputText.substring(0, 9); // Filename only shows the first ~10 chars to avoid overly long filenames.
+        String filename = "output_" + inputText.substring(0, 2); // Filename only shows the first ~3 chars to avoid overly long filenames.
 
         FileOutputStream fos = null;
         ObjectOutputStream oos = null;
